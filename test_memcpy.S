@@ -64,14 +64,26 @@ dut_entry:
   mret
  
 .user_program: 
-  li t0, 0x91000000
-  li t1, 0x92000000
-  li t2, 0x12345678
-  sw t2, 0(t0)
-  lw t2, 0(t0)
-  sw t2, 0(t1)
-  li a0, 1 // The test is successful
-  jr ra
+  /* INPUT:
+    $ra contains return address for this test; do not clobber it */
+  
+  /* OUTPUT:
+  $a0 should contain:
+  0 if the test FAILS
+  1 if the test PASSES */
+
+  # Save $ra on the stack
+  addi sp, sp, -16    # Allocate space on the stack (16-byte aligned)
+  sd ra, 8(sp)        # Store $ra on the stack
+
+  call dut_entry_c
+
+  # Restore $ra from the stack
+  ld ra, 8(sp)        # Load $ra from the stack
+  addi sp, sp, 16     # Deallocate space from the stack
+  
+  li a0, 1
+  jr ra /* return to caller */
 
 .new_trap_vector:
   j .test_failure

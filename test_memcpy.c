@@ -123,6 +123,14 @@ void* memcpy(void* dest, const void* src, size_t len)
 {
   const char* s = src;
   char *d = dest;
+  
+  if ((((uintptr_t)dest | (uintptr_t)src) & (sizeof(uintptr_t)-1)) == 0) {
+    while ((void*)d < (dest + len - (sizeof(uintptr_t)-1))) {
+      *(uintptr_t*)d = *(const uintptr_t*)s;
+      d += sizeof(uintptr_t);
+      s += sizeof(uintptr_t);
+    }
+  }
 
   while (d < (char*)(dest + len))
     *d++ = *s++;
@@ -130,8 +138,10 @@ void* memcpy(void* dest, const void* src, size_t len)
   return dest;
 }
 
-#define SHARED_MEM_ADDR  ((void *) 0x92000000)
-#define PRIVATE_MEM_ADDR ((void *) 0x80000000)
+#define SHARED_MEM_ADDR    ((void *) 0x92000000)
+#define SHARED_MEM_ADDR_2  ((void *) 0x91000000)
+#define PRIVATE_MEM_ADDR   ((void *) 0x80040000)
+#define PRIVATE_MEM_ADDR_2 ((void *) 0x80050000)
 
 #define riscv_perf_cntr_begin() asm volatile("csrwi 0x801, 1")
 #define riscv_perf_cntr_end() asm volatile("csrwi 0x801, 0")
@@ -140,7 +150,7 @@ void dut_entry_c() {
     printm("Made it here\n");
 
     riscv_perf_cntr_begin();
-    memcpy(PRIVATE_MEM_ADDR, SHARED_MEM_ADDR, 1024*100);
+    memcpy_shm_opt(PRIVATE_MEM_ADDR, SHARED_MEM_ADDR, 1024);
     riscv_perf_cntr_end();
     
     return;
