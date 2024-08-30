@@ -146,11 +146,21 @@ void* memcpy(void* dest, const void* src, size_t len)
 #define riscv_perf_cntr_begin() asm volatile("csrwi 0x801, 1")
 #define riscv_perf_cntr_end() asm volatile("csrwi 0x801, 0")
 
+#define SIZE 1024
+
 void dut_entry_c() {
     printm("Made it here\n");
 
+    //memcpy_shm_opt(SHARED_MEM_ADDR, SHARED_MEM_ADDR_2, SIZE);
+    //memcpy_shm_opt(PRIVATE_MEM_ADDR, SHARED_MEM_ADDR_2, SIZE);
+    //memcpy_shm_opt(SHARED_MEM_ADDR, PRIVATE_MEM_ADDR_2, SIZE);
+    //memcpy(PRIVATE_MEM_ADDR, PRIVATE_MEM_ADDR_2, SIZE);
+    //memcpy_shm_opt(PRIVATE_MEM_ADDR, PRIVATE_MEM_ADDR_2, SIZE);
     riscv_perf_cntr_begin();
-    memcpy_shm_opt(PRIVATE_MEM_ADDR, SHARED_MEM_ADDR, 1024);
+    //memcpy_shm_opt(SHARED_MEM_ADDR, SHARED_MEM_ADDR_2, SIZE);
+    memcpy_shm_opt(PRIVATE_MEM_ADDR, SHARED_MEM_ADDR_2, SIZE);
+    //memcpy_shm_opt(SHARED_MEM_ADDR, PRIVATE_MEM_ADDR_2, SIZE);
+    //memcpy_shm_opt(PRIVATE_MEM_ADDR, PRIVATE_MEM_ADDR_2, SIZE);
     riscv_perf_cntr_end();
     
     return;

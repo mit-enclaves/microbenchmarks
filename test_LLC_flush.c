@@ -62,7 +62,7 @@ void dut_entry_c() {
     printm("Made it here\n");
 
     riscv_perf_cntr_begin();
-    flush_llc_region(REGION_2_ADDR, 0x4);
+    flush_llc_region(REGION_2_ADDR, 0x9);
     riscv_perf_cntr_end();
     
     return;

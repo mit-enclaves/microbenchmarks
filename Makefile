@@ -64,11 +64,11 @@ COMMON_SRC := $(HW_TESTS_DIR)/infrastructure.c $(HW_TESTS_DIR)/infrastructure.S 
 
 # Elf Files
 $(BUILD_DIR)/%.elf: $(OS_PT_FILE) $(HW_TESTS_DIR)/%.S $(COMMON_SRC)
-	@mkdir -p $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)
 	@# Check if a C file with the same name exists
 	@$(eval C_FILE := $(wildcard $(HW_TESTS_DIR)/$*.c))
 	@# Include the C file in the compilation command if it exists
-	@if [ -z "$(C_FILE)" ]; then \
+	if [ -z "$(C_FILE)" ]; then \
 		$(CC) -T $(HW_TESTS_DIR)/infrastructure.lds -I $(BUILD_DIR) $(CCFLAGS) $(COMMON_SRC) -D OS_PT_FILE=\"$(OS_PT_FILE)\" $(HW_TESTS_DIR)/$*.S -o $(BUILD_DIR)/$*.elf; \
 	else \
 		$(CC) -T $(HW_TESTS_DIR)/infrastructure.lds -I $(BUILD_DIR) $(CCFLAGS) $(COMMON_SRC) -D OS_PT_FILE=\"$(OS_PT_FILE)\" $(HW_TESTS_DIR)/$*.S $(C_FILE) -o $(BUILD_DIR)/$*.elf; \
@@ -107,8 +107,8 @@ run_tests_simulator: $(HW_TESTS_TASKSIM)
 
 .PHONY: %.taskfpga
 %.taskfpga: check_env $(BUILD_DIR)/%.elf
-	sudo fpga-load-local-image -S 0 -I agfi-0b25880fb5ae74da1
-	-$(RISCY_HOME)/procs/build/RV64G_OOO.core_2.core_SMALL.cache_LARGE.tso.l1_cache_lru.secure_flush.check_deadlock.llc_lru/awsf1/bin/ubuntu.exe --core-num 2 --rom $(RISCY_HOME)/procs/rom/out/rom_core_2 --elf $(BUILD_DIR)/$*.elf --mem-size 2048 --ignore-user-stucks 1000000
+	sudo fpga-load-local-image -S 0 -I agfi-097b793816851114b
+	-$(RISCY_HOME)/procs/build/RV64G_OOO.core_2.core_SMALL.cache_LARGE.tso.l1_cache_lru.secure_flush.check_deadlock.shmem_refill.no_llc_part/awsf1/bin/ubuntu.exe --core-num 2 --rom $(RISCY_HOME)/procs/rom/out/rom_core_2 --elf $(BUILD_DIR)/$*.elf --mem-size 2048 --ignore-user-stucks 1000000
 
 .PHONY: run_tests_fpga
 run_tests_fpga: $(HW_TESTS_TASKFPGA)
