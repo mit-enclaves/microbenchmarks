@@ -64,7 +64,7 @@ SECTIONS
     _illegal_address_giga = .;
   } > DRAM =0x0
   
-  . = 0xFFFFD000;
+  . = 0xFFFFC000;
   .os_page_table ALIGN(0x1000) : {
     *(.os_page_table)
   } > DRAM =0x0

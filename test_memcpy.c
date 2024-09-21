@@ -131,22 +131,22 @@ void* memcpy(void* dest, const void* src, size_t len)
       s += sizeof(uintptr_t);
     }
   }
-
+  
   while (d < (char*)(dest + len))
     *d++ = *s++;
 
   return dest;
 }
 
-#define SHARED_MEM_ADDR    ((void *) 0x92000000)
+#define SHARED_MEM_ADDR    ((void *) 0x91020000)
 #define SHARED_MEM_ADDR_2  ((void *) 0x91000000)
 #define PRIVATE_MEM_ADDR   ((void *) 0x80040000)
-#define PRIVATE_MEM_ADDR_2 ((void *) 0x80050000)
+#define PRIVATE_MEM_ADDR_2 ((void *) 0x80060000)
 
 #define riscv_perf_cntr_begin() asm volatile("csrwi 0x801, 1")
 #define riscv_perf_cntr_end() asm volatile("csrwi 0x801, 0")
 
-#define SIZE 1024
+#define SIZE 1024*100
 
 void dut_entry_c() {
     printm("Made it here\n");
@@ -155,12 +155,12 @@ void dut_entry_c() {
     //memcpy_shm_opt(PRIVATE_MEM_ADDR, SHARED_MEM_ADDR_2, SIZE);
     //memcpy_shm_opt(SHARED_MEM_ADDR, PRIVATE_MEM_ADDR_2, SIZE);
     //memcpy(PRIVATE_MEM_ADDR, PRIVATE_MEM_ADDR_2, SIZE);
-    //memcpy_shm_opt(PRIVATE_MEM_ADDR, PRIVATE_MEM_ADDR_2, SIZE);
+    //memcpy(PRIVATE_MEM_ADDR, PRIVATE_MEM_ADDR_2, SIZE);
     riscv_perf_cntr_begin();
-    //memcpy_shm_opt(SHARED_MEM_ADDR, SHARED_MEM_ADDR_2, SIZE);
-    memcpy_shm_opt(PRIVATE_MEM_ADDR, SHARED_MEM_ADDR_2, SIZE);
-    //memcpy_shm_opt(SHARED_MEM_ADDR, PRIVATE_MEM_ADDR_2, SIZE);
-    //memcpy_shm_opt(PRIVATE_MEM_ADDR, PRIVATE_MEM_ADDR_2, SIZE);
+    //memcpy_shm(SHARED_MEM_ADDR, SHARED_MEM_ADDR_2, SIZE);
+    memcpy_shm(PRIVATE_MEM_ADDR, SHARED_MEM_ADDR, SIZE);
+    //memcpy_shm(SHARED_MEM_ADDR, PRIVATE_MEM_ADDR_2, SIZE);
+    //memcpy(PRIVATE_MEM_ADDR, PRIVATE_MEM_ADDR_2, SIZE);
     riscv_perf_cntr_end();
     
     return;

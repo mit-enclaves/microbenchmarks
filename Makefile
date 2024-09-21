@@ -1,6 +1,6 @@
 remove_trailing_slash = $(if $(filter %/,$(1)),$(call remove_trailing_slash,$(patsubst %/,%,$(1))),$(1))
 HW_TESTS_DIR := $(call remove_trailing_slash, $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
-BUILD_DIR:=$(HW_TESTS_DIR)/build
+BUILD_DIR:=build
 
 HW_TESTS_NAMES :=  $(notdir $(basename $(wildcard $(HW_TESTS_DIR)/test_*)))
 HW_TESTS_ELFS := $(addprefix $(BUILD_DIR)/, $(addsuffix .elf, $(HW_TESTS_NAMES)))
@@ -17,7 +17,7 @@ CC:=riscv64-unknown-elf-gcc
 OBJCOPY:=riscv64-unknown-linux-gnu-objcopy
 OBJDUMP:=riscv64-unknown-elf-objdump
 
-CCFLAGS := -march=rv64g -mcmodel=medany -mabi=lp64 -nostdlib -nostartfiles -fno-common -fno-tree-loop-distribute-patterns -std=gnu11 -static -ggdb3 -O0 -Wall
+CCFLAGS := -march=rv64g -mcmodel=medany -mabi=lp64 -nostdlib -nostartfiles -fno-common -fno-tree-loop-distribute-patterns -std=gnu11 -static -ggdb3 -O3 -Wall
 QEMU_FLAGS := -smp cpus=2 -machine sanctum -m 2G -nographic
 
 .PHONY: check_env_qemu
@@ -77,12 +77,12 @@ $(BUILD_DIR)/%.elf: $(OS_PT_FILE) $(HW_TESTS_DIR)/%.S $(COMMON_SRC)
 # Run the Tests
 .PHONY: %.task
 %.task: check_env_qemu $(BUILD_DIR)/%.elf $(NULL_BOOT_BINARY)
-	-cd $(BUILD_DIR) && $(SANCTUM_QEMU) $(QEMU_FLAGS) -kernel $*.elf -bios $(NULL_BOOT_BINARY)
+	-cd $(BUILD_DIR) && $(SANCTUM_QEMU) $(QEMU_FLAGS) -kernel $*.elf -bios null_boot.bin
 
 # Debug the Tests
 .PHONY: %.debug
 %.debug: check_env_qemu $(BUILD_DIR)/%.elf $(NULL_BOOT_BINARY)
-	cd $(BUILD_DIR) && $(SANCTUM_QEMU) $(QEMU_FLAGS) -s -S -kernel $*.elf -bios $(NULL_BOOT_BINARY)
+	cd $(BUILD_DIR) && $(SANCTUM_QEMU) $(QEMU_FLAGS) -s -S -kernel $*.elf -bios null_boot.bin
 
 # Build All the Elf Files
 .PHONY: elfs

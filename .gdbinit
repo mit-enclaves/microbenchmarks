@@ -4,4 +4,4 @@ foc cmd
 set trace-commands on
 set logging on
 target remote localhost:1234
-add-symbol-file build/test_memcpy.elf
+add-symbol-file build/test_rdmem.elf
